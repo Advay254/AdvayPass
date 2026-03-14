@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AdvayPass — Analytics</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sora: ['Sora','sans-serif'], mono: ['JetBrains Mono','monospace'] },
+          colors: {
+            brand: { 50:'#eff6ff',100:'#dbeafe',200:'#bfdbfe',300:'#93c5fd',400:'#60a5fa',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8',800:'#1e40af',900:'#1e3a8a' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { font-family: 'Sora', sans-serif; }
+    body { background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 60%, #e0f2fe 100%); min-height: 100vh; }
+
+    .glass { background: rgba(255,255,255,0.85); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.9); box-shadow: 0 8px 40px rgba(37,99,235,0.07); }
+
+    .stat-card { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #fff; }
+    .stat-card-light { background: #fff; border: 1px solid #e0e8ff; }
+
+    .input-field { background:#f8faff; border:2px solid #e0e8ff; transition:all 0.2s; }
+    .input-field:focus { outline:none; border-color:#2563eb; background:#fff; box-shadow:0 0 0 4px rgba(37,99,235,0.08); }
+
+    .btn-primary { background:linear-gradient(135deg,#2563eb,#1d4ed8); box-shadow:0 4px 20px rgba(37,99,235,0.35); transition:all 0.2s; }
+    .btn-primary:hover { transform:translateY(-1px); box-shadow:0 8px 28px rgba(37,99,235,0.45); }
+
+    .badge { font-family:'JetBrains Mono',monospace; background:#eff6ff; color:#2563eb; border:1px solid #bfdbfe; font-size:11px; font-weight:600; padding:3px 10px; border-radius:20px; }
+
+    /* Spinner */
+    .spin { animation: rotation 0.7s linear infinite; }
+    @keyframes rotation { to { transform: rotate(360deg); } }
+
+    #pwGate, #loading, #error, #dashboard { transition: opacity 0.3s; }
+    .hidden { display: none !important; }
+
+    /* Table */
+    table { border-collapse: collapse; width: 100%; }
+    th { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.06em; padding: 10px 12px; background: #f8faff; border-bottom: 1px solid #e0e8ff; }
+    td { font-size: 13px; padding: 10px 12px; border-bottom: 1px solid #f0f4ff; color: #374151; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f8faff; }
+    td.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="px-6 py-5 flex items-center justify-between max-w-5xl mx-auto">
+  <a href="/" class="flex items-center gap-2 no-underline">
+    <div class="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+    </div>
+    <span class="font-bold text-lg text-gray-800">Advay<span style="background:linear-gradient(135deg,#2563eb,#1d4ed8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Pass</span></span>
+  </a>
+  <span class="badge" id="codeLabel">Analytics</span>
+</nav>
+
+<main class="max-w-5xl mx-auto px-4 pb-20">
+
+  <!-- PASSWORD GATE -->
+  <div id="pwGate" class="hidden">
+    <div class="glass rounded-3xl p-8 max-w-sm mx-auto mt-8 text-center">
+      <div class="w-14 h-14 bg-brand-100 rounded-2xl flex items-center justify-center mx-auto mb-5">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </div>
+      <h2 class="text-xl font-700 text-gray-800 mb-2">Protected Analytics</h2>
+      <p class="text-sm text-gray-500 mb-6">Enter the analytics password to view stats for this link.</p>
+      <input id="pwInput" type="password" maxlength="8" placeholder="Enter password"
+        class="input-field w-full rounded-xl px-4 py-3.5 text-gray-800 text-sm mb-3" />
+      <div id="pwError" class="hidden text-sm text-red-600 mb-3">Incorrect password. Try again.</div>
+      <button onclick="submitPassword()" class="btn-primary w-full rounded-xl py-3.5 text-white font-600 text-sm">
+        Unlock Analytics
+      </button>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div id="loading" class="flex flex-col items-center justify-center mt-20 gap-4">
+    <svg class="spin" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10" stroke-opacity="0.2"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
+    <p class="text-gray-500 text-sm">Loading analytics…</p>
+  </div>
+
+  <!-- ERROR -->
+  <div id="error" class="hidden text-center mt-20">
+    <p class="text-lg font-600 text-gray-700 mb-2">Link not found</p>
+    <p class="text-sm text-gray-400 mb-6">This link may have expired or doesn't exist.</p>
+    <a href="/" class="text-brand-600 text-sm font-600 hover:underline">← Create a new link</a>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashboard" class="hidden">
+
+    <!-- Header info -->
+    <div class="glass rounded-2xl p-5 mb-6 flex flex-wrap items-center gap-4">
+      <div class="flex-1 min-w-0">
+        <p class="text-xs font-600 text-gray-400 uppercase tracking-wider mb-1">Original URL</p>
+        <a id="origUrl" href="#" target="_blank" class="text-brand-600 text-sm font-500 hover:underline truncate block"></a>
+      </div>
+      <div class="flex gap-3 flex-wrap shrink-0">
+        <div class="text-right">
+          <p class="text-xs text-gray-400">Created</p>
+          <p id="createdAt" class="text-sm font-600 text-gray-700 mono"></p>
+        </div>
+        <div class="text-right">
+          <p class="text-xs text-gray-400">Expires</p>
+          <p id="expiresAt" class="text-sm font-600 text-gray-700 mono"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stat cards -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+      <div class="stat-card rounded-2xl p-5">
+        <p class="text-xs font-600 text-blue-200 uppercase tracking-wider mb-1">Total Clicks</p>
+        <p id="statTotal" class="text-3xl font-800">—</p>
+      </div>
+      <div class="stat-card rounded-2xl p-5">
+        <p class="text-xs font-600 text-blue-200 uppercase tracking-wider mb-1">Unique Clicks</p>
+        <p id="statUnique" class="text-3xl font-800">—</p>
+      </div>
+      <div class="stat-card-light rounded-2xl p-5">
+        <p class="text-xs font-600 text-gray-400 uppercase tracking-wider mb-1">Top Country</p>
+        <p id="statCountry" class="text-2xl font-700 text-gray-800">—</p>
+      </div>
+      <div class="stat-card-light rounded-2xl p-5">
+        <p class="text-xs font-600 text-gray-400 uppercase tracking-wider mb-1">Top Device</p>
+        <p id="statDevice" class="text-2xl font-700 text-gray-800">—</p>
+      </div>
+    </div>
+
+    <!-- Charts row -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+      <!-- Clicks over time (line) -->
+      <div class="glass rounded-2xl p-5 lg:col-span-2">
+        <p class="text-sm font-700 text-gray-700 mb-4">Clicks Over Time</p>
+        <div style="height:200px">
+          <canvas id="lineChart"></canvas>
+        </div>
+      </div>
+      <!-- Device doughnut -->
+      <div class="glass rounded-2xl p-5">
+        <p class="text-sm font-700 text-gray-700 mb-4">Device Type</p>
+        <div style="height:200px; display:flex; align-items:center; justify-content:center">
+          <canvas id="deviceChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Countries + Browser row -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+      <!-- Countries -->
+      <div class="glass rounded-2xl p-5">
+        <p class="text-sm font-700 text-gray-700 mb-4">Top Countries</p>
+        <div id="countriesList" class="space-y-2"></div>
+      </div>
+      <!-- Browsers -->
+      <div class="glass rounded-2xl p-5">
+        <p class="text-sm font-700 text-gray-700 mb-4">Browsers</p>
+        <div id="browsersList" class="space-y-2"></div>
+      </div>
+    </div>
+
+    <!-- Recent clicks table -->
+    <div class="glass rounded-2xl overflow-hidden">
+      <div class="px-5 py-4 border-b border-brand-50">
+        <p class="text-sm font-700 text-gray-700">Recent Clicks</p>
+      </div>
+      <div class="overflow-x-auto">
+        <table>
+          <thead>
+            <tr>
+              <th class="text-left">Time</th>
+              <th class="text-left">Country</th>
+              <th class="text-left">Device</th>
+              <th class="text-left">Browser</th>
+              <th class="text-left">Referrer</th>
+            </tr>
+          </thead>
+          <tbody id="clicksTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  let code     = '';
+  let password = '';
+  let data     = null;
+
+  // Extract code from URL path: /analytics/:code
+  const parts = window.location.pathname.split('/');
+  code = parts[parts.length - 1];
+  document.getElementById('codeLabel').textContent = code;
+
+  // ── Boot ──────────────────────────────────────────────────────────────────
+  async function boot() {
+    if (!code) { showError(); return; }
+    await tryLoad('');
+  }
+
+  async function tryLoad(pw) {
+    password = pw;
+    show('loading');
+    try {
+      const url = `/api/analytics/${code}${pw ? '?password=' + encodeURIComponent(pw) : ''}`;
+      const r   = await fetch(url);
+      if (r.status === 401) {
+        const d = await r.json();
+        if (d.needsPassword) { show('pwGate'); return; }
+      }
+      if (r.status === 404) { showError(); return; }
+      if (!r.ok) { showError(); return; }
+      data = await r.json();
+      render(data);
+      show('dashboard');
+    } catch { showError(); }
+  }
+
+  async function submitPassword() {
+    const pw = document.getElementById('pwInput').value.trim();
+    if (!pw) return;
+    document.getElementById('pwError').classList.add('hidden');
+    try {
+      const r = await fetch(`/api/analytics/${code}/auth`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pw })
+      });
+      const d = await r.json();
+      if (d.access) {
+        await tryLoad(pw);
+      } else {
+        document.getElementById('pwError').classList.remove('hidden');
+      }
+    } catch {
+      document.getElementById('pwError').classList.remove('hidden');
+    }
+  }
+
+  // ── Render ─────────────────────────────────────────────────────────────────
+  function render(d) {
+    const { link, stats } = d;
+
+    // Header
+    const origLink = document.getElementById('origUrl');
+    origLink.href = link.url;
+    origLink.textContent = link.url.length > 60 ? link.url.slice(0, 60) + '…' : link.url;
+    document.getElementById('createdAt').textContent = fmtDate(link.created_at);
+    document.getElementById('expiresAt').textContent = link.expires_at ? fmtDate(link.expires_at) : 'Never';
+
+    // Stat cards
+    document.getElementById('statTotal').textContent  = stats.totalClicks.toLocaleString();
+    document.getElementById('statUnique').textContent = stats.uniqueClicks.toLocaleString();
+
+    const topCountry = topKey(stats.byCountry);
+    const topDevice  = topKey(stats.byDevice);
+    document.getElementById('statCountry').textContent = topCountry || '—';
+    document.getElementById('statDevice').textContent  = topDevice  || '—';
+
+    // Line chart
+    buildLine(stats.byDay);
+
+    // Device doughnut
+    buildDoughnut(stats.byDevice);
+
+    // Countries list
+    buildBarList('countriesList', stats.byCountry, stats.totalClicks);
+
+    // Browsers list
+    buildBarList('browsersList', stats.byBrowser, stats.totalClicks);
+
+    // Table
+    buildTable(stats.recentClicks);
+  }
+
+  function buildLine(byDay) {
+    const sorted = Object.keys(byDay).sort();
+    const labels = sorted.map(d => new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short'}));
+    const values = sorted.map(d => byDay[d]);
+
+    new Chart(document.getElementById('lineChart'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          data: values,
+          borderColor: '#2563eb',
+          backgroundColor: 'rgba(37,99,235,0.08)',
+          borderWidth: 2,
+          tension: 0.4,
+          fill: true,
+          pointBackgroundColor: '#2563eb',
+          pointRadius: 3,
+          pointHoverRadius: 5
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { font: { size: 10, family: 'JetBrains Mono' }, color: '#94a3b8' }, beginAtZero: true },
+          x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#94a3b8' } }
+        }
+      }
+    });
+  }
+
+  function buildDoughnut(byDevice) {
+    const labels = Object.keys(byDevice);
+    const values = labels.map(k => byDevice[k]);
+    if (!labels.length) return;
+
+    new Chart(document.getElementById('deviceChart'), {
+      type: 'doughnut',
+      data: {
+        labels,
+        datasets: [{
+          data: values,
+          backgroundColor: ['#2563eb','#93c5fd','#bfdbfe'],
+          borderWidth: 0,
+          hoverOffset: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom', labels: { font: { size: 11, family: 'Sora' }, color: '#64748b', padding: 12 } }
+        }
+      }
+    });
+  }
+
+  function buildBarList(elId, obj, total) {
+    const el      = document.getElementById(elId);
+    const sorted  = Object.entries(obj).sort((a,b) => b[1]-a[1]).slice(0, 8);
+    if (!sorted.length) { el.innerHTML = '<p class="text-sm text-gray-400">No data yet</p>'; return; }
+    el.innerHTML = sorted.map(([label, count]) => {
+      const pct = total ? Math.round(count / total * 100) : 0;
+      return `
+        <div>
+          <div class="flex justify-between mb-1">
+            <span class="text-xs font-500 text-gray-700">${esc(label)}</span>
+            <span class="text-xs font-600 text-gray-500">${count.toLocaleString()} <span class="text-gray-300">(${pct}%)</span></span>
+          </div>
+          <div class="bg-gray-100 rounded-full h-1.5 overflow-hidden">
+            <div class="bg-brand-500 h-full rounded-full" style="width:${pct}%"></div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function buildTable(clicks) {
+    const tbody = document.getElementById('clicksTable');
+    if (!clicks.length) {
+      tbody.innerHTML = '<tr><td colspan="5" class="text-center text-gray-400 py-8">No clicks recorded yet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = clicks.map(c => `
+      <tr>
+        <td class="mono">${fmtDateTime(c.clicked_at)}</td>
+        <td>${esc(c.country || '—')}</td>
+        <td>${esc(c.device  || '—')}</td>
+        <td>${esc(c.browser || '—')}</td>
+        <td class="mono text-gray-400">${c.referrer ? esc(c.referrer.slice(0,40)) : '—'}</td>
+      </tr>`).join('');
+  }
+
+  // ── Utilities ──────────────────────────────────────────────────────────────
+  function show(id) {
+    ['pwGate','loading','error','dashboard'].forEach(n =>
+      document.getElementById(n).classList.toggle('hidden', n !== id)
+    );
+  }
+  function showError() { show('error'); }
+
+  function topKey(obj) {
+    if (!obj || !Object.keys(obj).length) return null;
+    return Object.entries(obj).sort((a,b)=>b[1]-a[1])[0][0];
+  }
+  function fmtDate(s)     { return s ? new Date(s).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '—'; }
+  function fmtDateTime(s) {
+    if (!s) return '—';
+    const d = new Date(s);
+    return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}) + ' ' + d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+  }
+  function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  // Enter key on password input
+  document.getElementById('pwInput').addEventListener('keydown', e => { if (e.key==='Enter') submitPassword(); });
+
+  // Boot
+  boot();
+</script>
+</body>
+</html>

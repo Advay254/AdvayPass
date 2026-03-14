@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AdvayPass — Loading…</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --blue:    #2563eb;
+      --blue-dk: #1d4ed8;
+      --blue-lt: #eff6ff;
+    }
+
+    body {
+      font-family: 'Sora', sans-serif;
+      background: linear-gradient(150deg, #0f172a 0%, #1e3a8a 50%, #1e40af 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      color: #fff;
+      overflow: hidden;
+    }
+
+    /* Animated background orbs */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.15;
+      pointer-events: none;
+      animation: drift 8s ease-in-out infinite;
+    }
+    .orb-1 { width: 400px; height: 400px; background: #3b82f6; top: -100px; left: -100px; animation-delay: 0s; }
+    .orb-2 { width: 300px; height: 300px; background: #60a5fa; bottom: -80px; right: -80px; animation-delay: 3s; }
+    .orb-3 { width: 200px; height: 200px; background: #93c5fd; top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: 1.5s; }
+    @keyframes drift { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-20px) scale(1.05)} }
+
+    /* Progress bar */
+    #progressBar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #60a5fa, #93c5fd, #60a5fa);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s linear infinite;
+      transition: width 1s linear;
+      border-radius: 0 2px 2px 0;
+      z-index: 100;
+    }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+    /* Card */
+    .card {
+      position: relative;
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(24px);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 28px;
+      padding: 40px 32px;
+      max-width: 440px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.4);
+    }
+
+    /* Logo */
+    .logo {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+    .logo span { color: #93c5fd; }
+
+    /* Countdown ring */
+    .ring-wrap {
+      position: relative;
+      width: 110px;
+      height: 110px;
+      margin: 0 auto 28px;
+    }
+    .ring-svg { transform: rotate(-90deg); }
+    .ring-track { fill: none; stroke: rgba(255,255,255,0.1); stroke-width: 5; }
+    .ring-fill  { fill: none; stroke: #60a5fa; stroke-width: 5; stroke-linecap: round;
+                  stroke-dasharray: 283; stroke-dashoffset: 0; transition: stroke-dashoffset 1s linear; }
+    .ring-num {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 32px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1;
+    }
+    .ring-label { position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%); font-size: 9px; color: rgba(255,255,255,0.4); font-weight: 500; letter-spacing: 0.1em; white-space: nowrap; }
+
+    /* Heading */
+    h1 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+    .subtitle { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 32px; }
+
+    /* Destination preview */
+    .dest-preview {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 28px;
+      word-break: break-all;
+      text-align: left;
+    }
+    .dest-preview span { font-weight: 600; color: rgba(255,255,255,0.6); margin-right: 4px; }
+
+    /* Buttons */
+    .btn-skip {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      border-radius: 16px;
+      border: none;
+      cursor: pointer;
+      font-family: 'Sora', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: #fff;
+      box-shadow: 0 8px 24px rgba(245,158,11,0.4);
+      transition: all 0.2s;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-skip:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(245,158,11,0.5); }
+
+    .btn-continue {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 14px;
+      border-radius: 16px;
+      border: 1.5px solid rgba(255,255,255,0.2);
+      cursor: pointer;
+      font-family: 'Sora', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.4);
+      transition: all 0.4s ease;
+      pointer-events: none;
+    }
+    .btn-continue.active {
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      border-color: rgba(255,255,255,0.3);
+      pointer-events: all;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    }
+    .btn-continue.active:hover { transform: translateY(-1px); background: rgba(255,255,255,0.2); }
+
+    /* Waiting dots animation */
+    .waiting-dot {
+      display: inline-block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      margin: 0 2px;
+      animation: blink 1.2s ease-in-out infinite;
+    }
+    .waiting-dot:nth-child(2) { animation-delay: 0.2s; }
+    .waiting-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes blink { 0%,100%{opacity:0.3;transform:scale(0.8)} 50%{opacity:1;transform:scale(1)} }
+
+    /* Powered by */
+    .footer { margin-top: 20px; font-size: 11px; color: rgba(255,255,255,0.25); }
+    .footer a { color: rgba(255,255,255,0.4); text-decoration: none; }
+    .footer a:hover { color: #93c5fd; }
+  </style>
+</head>
+<body>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div id="progressBar" style="width: 0%"></div>
+
+  <div class="card">
+    <div class="logo">Advay<span>Pass</span></div>
+
+    <!-- Countdown ring -->
+    <div class="ring-wrap">
+      <svg class="ring-svg" width="110" height="110" viewBox="0 0 110 110">
+        <circle class="ring-track" cx="55" cy="55" r="45"/>
+        <circle class="ring-fill" id="ringFill" cx="55" cy="55" r="45"/>
+      </svg>
+      <div class="ring-num" id="ringNum">15</div>
+      <div class="ring-label">SECONDS</div>
+    </div>
+
+    <h1>Almost there…</h1>
+    <p class="subtitle">Your destination is loading up</p>
+
+    <!-- Destination preview -->
+    <div class="dest-preview" id="destPreview">
+      <span>→</span><span id="destText">loading…</span>
+    </div>
+
+    <!-- Skip Wait button (the smartlink) -->
+    <a id="skipBtn" href="#" target="_blank" rel="noopener" class="btn-skip" onclick="onSkipClick(event)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      Skip Wait
+    </a>
+
+    <!-- Continue button (appears at 8s) -->
+    <button id="continueBtn" class="btn-continue" onclick="goDestination()">
+      <span id="continueBtnText">
+        <span class="waiting-dot"></span>
+        <span class="waiting-dot"></span>
+        <span class="waiting-dot"></span>
+      </span>
+    </button>
+
+    <div class="footer">Shortened by <a href="/">AdvayPass</a></div>
+  </div>
+
+<script>
+  (function () {
+    const TOTAL       = 15;   // total wait seconds
+    const UNLOCK_AT   = 8;    // seconds elapsed when Continue unlocks
+
+    const params  = new URLSearchParams(window.location.search);
+    const dest    = decodeURIComponent(params.get('dest') || '');
+
+    // Show destination preview (truncated)
+    const preview = dest.length > 55 ? dest.slice(0, 55) + '…' : dest;
+    document.getElementById('destText').textContent = preview || 'your destination';
+
+    // Fetch smartlink from server config
+    let smartlink = 'https://millionairelucidlytransmitted.com/qfbmxh4gax?key=bc08f1d488a15a751b9aec38cdf96e49';
+    fetch('/api/config').then(r => r.json()).then(d => {
+      if (d.smartlink) {
+        smartlink = d.smartlink;
+        document.getElementById('skipBtn').href = smartlink;
+      }
+    }).catch(() => {});
+    document.getElementById('skipBtn').href = smartlink;
+
+    // ── Timer ──────────────────────────────────────────────────────────────
+    const ringFill    = document.getElementById('ringFill');
+    const ringNum     = document.getElementById('ringNum');
+    const continueBtn = document.getElementById('continueBtn');
+    const progressBar = document.getElementById('progressBar');
+    const circumference = 2 * Math.PI * 45; // ≈ 283
+
+    let elapsed     = 0;
+    let redirected  = false;
+
+    ringFill.style.strokeDasharray  = circumference;
+    ringFill.style.strokeDashoffset = 0;
+
+    const tick = setInterval(() => {
+      elapsed++;
+
+      // Progress bar
+      progressBar.style.width = ((elapsed / TOTAL) * 100) + '%';
+
+      // Ring countdown
+      const remaining = TOTAL - elapsed;
+      ringNum.textContent = remaining > 0 ? remaining : '0';
+      const offset = ((elapsed / TOTAL) * circumference);
+      ringFill.style.strokeDashoffset = offset;
+
+      // Unlock continue button at UNLOCK_AT seconds
+      if (elapsed >= UNLOCK_AT && !continueBtn.classList.contains('active')) {
+        continueBtn.classList.add('active');
+        document.getElementById('continueBtnText').innerHTML =
+          `Continue to destination <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`;
+      }
+
+      // Auto-redirect at TOTAL seconds
+      if (elapsed >= TOTAL && !redirected) {
+        clearInterval(tick);
+        goDestination();
+      }
+    }, 1000);
+
+    // ── Go to destination ──────────────────────────────────────────────────
+    window.goDestination = function () {
+      if (redirected || !dest) return;
+      redirected = true;
+      clearInterval(tick);
+      window.location.href = dest;
+    };
+
+    // ── Skip Wait = open smartlink in new tab, stay on page ───────────────
+    window.onSkipClick = function (e) {
+      e.preventDefault();
+      window.open(smartlink, '_blank', 'noopener,noreferrer');
+      // Don't navigate away — the wait continues
+    };
+  })();
+</script>
+</body>
+</html>
