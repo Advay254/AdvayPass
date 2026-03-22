@@ -3,8 +3,55 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AdvayPass — Smart URL Shortener</title>
-  <meta name="description" content="Shorten any link in seconds. Get click analytics, QR codes, and expiring links. Free, fast, no sign-up." />
+  <title>AdvayPass — Free Smart URL Shortener</title>
+  <meta name="description" content="Shorten any link in seconds. Get click analytics, QR codes, custom aliases, and auto-expiry. Free, fast, no sign-up required." />
+  <meta name="robots" content="index, follow" />
+  <meta name="keywords" content="url shortener, link shortener, short links, qr code generator, link analytics, free url shortener, custom alias, no signup" />
+  <meta name="author" content="Advay" />
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://advaypass.onrender.com/" />
+
+  <!-- Open Graph -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:site_name"   content="AdvayPass" />
+  <meta property="og:title"       content="AdvayPass — Free Smart URL Shortener" />
+  <meta property="og:description" content="Shorten any link instantly. Click analytics, QR codes, custom aliases, and auto-expiry. No account needed." />
+  <meta property="og:url"         content="https://advaypass.onrender.com/" />
+  <meta property="og:image"       content="https://advaypass.onrender.com/favicon.svg" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card"        content="summary" />
+  <meta name="twitter:title"       content="AdvayPass — Free Smart URL Shortener" />
+  <meta name="twitter:description" content="Shorten any link instantly. Click analytics, QR codes, custom aliases, and auto-expiry. No account needed." />
+  <meta name="twitter:image"       content="https://advaypass.onrender.com/favicon.svg" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="apple-touch-icon"          href="/favicon.svg" />
+
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color"                       content="#2563eb" />
+  <meta name="mobile-web-app-capable"            content="yes" />
+  <meta name="apple-mobile-web-app-capable"      content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title"        content="AdvayPass" />
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "AdvayPass",
+    "url": "https://advaypass.onrender.com",
+    "description": "Free smart URL shortener with click analytics, QR codes, custom aliases, and auto-expiry. No sign-up required.",
+    "applicationCategory": "UtilityApplication",
+    "operatingSystem": "Web",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "featureList": ["URL Shortening", "Click Analytics", "QR Code Generation", "Custom Aliases", "Link Expiry", "No Registration"]
+  }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -424,6 +471,22 @@
           class="input-field w-full rounded-xl px-4 py-3.5 text-gray-800 placeholder-gray-400 text-sm sm:text-base" />
       </div>
 
+      <!-- Custom Alias -->
+      <div class="mb-4">
+        <label class="block text-sm font-600 text-gray-700 mb-1">
+          Custom alias
+          <span class="text-gray-400 font-400 ml-1">(optional, 3–30 chars)</span>
+        </label>
+        <p class="text-xs text-gray-400 mb-2">Leave blank for a random code. Only lowercase letters, numbers, and hyphens.</p>
+        <div class="relative">
+          <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-500 pointer-events-none" id="aliasDomainHint"></span>
+          <input id="aliasInput" type="text" maxlength="30" placeholder="e.g. my-link or promo2025"
+            class="input-field w-full rounded-xl px-4 py-3.5 text-gray-800 placeholder-gray-400 text-sm" style="padding-left:1rem"
+            oninput="onAliasInput()" />
+        </div>
+        <p id="aliasStatus" class="text-xs mt-1 hidden"></p>
+      </div>
+
       <!-- Expiry + Custom Row -->
       <div class="mb-4">
         <label class="block text-sm font-600 text-gray-700 mb-2">Link expires in</label>
@@ -598,6 +661,30 @@
   let currentQrSvg       = '';
   let currentCode        = '';
 
+  // ── Alias live check ───────────────────────────────────────────────────────
+  let aliasTimer = null;
+  function onAliasInput() {
+    const val = document.getElementById('aliasInput').value.trim();
+    const st  = document.getElementById('aliasStatus');
+    clearTimeout(aliasTimer);
+    if (!val) { st.classList.add('hidden'); return; }
+    st.textContent = 'Checking…';
+    st.className = 'text-xs mt-1 text-gray-400';
+    aliasTimer = setTimeout(async () => {
+      try {
+        const r = await fetch(`/api/check-alias/${encodeURIComponent(val.toLowerCase())}`);
+        const d = await r.json();
+        if (d.available) {
+          st.textContent = '✓ Available!';
+          st.className = 'text-xs mt-1 text-green-600 font-600';
+        } else {
+          st.textContent = '✗ ' + (d.reason || 'Not available');
+          st.className = 'text-xs mt-1 text-red-600';
+        }
+      } catch { st.classList.add('hidden'); }
+    }, 500);
+  }
+
   // ── Expiry toggle ──────────────────────────────────────────────────────────
   function onExpiryChange() {
     const wrap = document.getElementById('customDaysWrap');
@@ -620,8 +707,9 @@
 
   // ── Shorten ────────────────────────────────────────────────────────────────
   async function shortenURL() {
-    const url = document.getElementById('urlInput').value.trim();
-    const ap  = document.getElementById('analyticsPassword').value.trim();
+    const url          = document.getElementById('urlInput').value.trim();
+    const ap           = document.getElementById('analyticsPassword').value.trim();
+    const custom_alias = document.getElementById('aliasInput').value.trim().toLowerCase();
     const days = getExpiryDays();
     if (days === null) return;
 
@@ -632,7 +720,7 @@
       const r = await fetch('/api/shorten', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url, expiry_days: days, analytics_password: ap || '' })
+        body: JSON.stringify({ url, expiry_days: days, analytics_password: ap || '', custom_alias })
       });
       const data = await r.json();
       if (!r.ok) { showError(data.error || 'Something went wrong.'); return; }
@@ -673,6 +761,8 @@
   function resetForm() {
     document.getElementById('urlInput').value          = '';
     document.getElementById('analyticsPassword').value = '';
+    document.getElementById('aliasInput').value        = '';
+    document.getElementById('aliasStatus').classList.add('hidden');
     document.getElementById('expirySelect').value      = '7';
     document.getElementById('customDaysWrap').classList.remove('visible');
     document.getElementById('resultCard').classList.add('hidden');
@@ -749,6 +839,12 @@
   function clearError() { document.getElementById('errorMsg').classList.add('hidden'); }
 
   document.getElementById('urlInput').addEventListener('keydown', e => { if (e.key === 'Enter') shortenURL(); });
+
+  // Register service worker for PWA
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+  }
+
 </script>
 <script src="https://millionairelucidlytransmitted.com/b7/d8/16/b7d816ecd3fb4c0eb60c2de88b5dee50.js"></script>
 </body>
