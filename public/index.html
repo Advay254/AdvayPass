@@ -56,6 +56,7 @@
     tailwind.config = {
       theme: {
         extend: {
+          screens: { xs: '380px' },
           fontFamily: { sora: ['Sora', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
           colors: {
             brand: { 50:'#eff6ff', 100:'#dbeafe', 200:'#bfdbfe', 300:'#93c5fd', 400:'#60a5fa', 500:'#3b82f6', 600:'#2563eb', 700:'#1d4ed8', 800:'#1e40af', 900:'#1e3a8a' }
@@ -68,10 +69,13 @@
     * { font-family: 'Sora', sans-serif; }
 
     /* ── BODY ── */
+    html, body {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
     body {
       background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 50%, #e0f2fe 100%);
       min-height: 100vh;
-      overflow-x: hidden;
     }
 
     /* ── BACKGROUND DECORATION ── */
@@ -187,6 +191,7 @@
     /* ── 3D TICKER STRIP (rave3d inspired) ── */
     .ticker-wrap {
       width: 100%;
+      max-width: 100%;
       overflow: hidden;
       transform: perspective(500px) rotateX(5deg);
       padding: 10px 0;
@@ -337,31 +342,7 @@
   <svg class="bg-chain" style="--dur:13s;--delay:1s;--rot:-10deg;top:35%;right:12%;width:56px;height:56px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
 </div>
 
-<!-- ── NAV ── -->
-<nav class="px-6 py-5 flex items-center justify-between max-w-5xl mx-auto page-inner">
-  <div class="flex items-center gap-2">
-    <div class="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center shadow-sm">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-    </div>
-    <span class="font-bold text-lg text-gray-800">Advay<span class="logo-mark">Pass</span></span>
-  </div>
-
-  <!-- ── ANIMATED BADGES ── -->
-  <div class="flex items-center gap-2">
-    <div class="badge-animated badge-free">
-      <span class="badge-icon">
-        <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-      </span>
-      Free Forever
-    </div>
-    <div class="badge-animated badge-nosignup">
-      <span class="badge-icon">
-        <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-      </span>
-      No Sign-up
-    </div>
-  </div>
-</nav>
+<!-- ── NAV ── -->\n<nav class=\"px-4 sm:px-6 py-4 flex items-center justify-between max-w-5xl mx-auto page-inner w-full box-border\">\n  <div class=\"flex items-center gap-2 flex-shrink-0\">\n    <div class=\"w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center shadow-sm flex-shrink-0\">\n      <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"white\" stroke-width=\"2.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71\"/><path d=\"M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71\"/></svg>\n    </div>\n    <span class=\"font-bold text-lg text-gray-800 whitespace-nowrap\">Advay<span class=\"logo-mark\">Pass</span></span>\n  </div>\n\n  <!-- ── ANIMATED BADGES — hidden on xs, visible from 380px ── -->\n  <div class=\"hidden xs:flex items-center gap-2\">\n    <div class=\"badge-animated badge-free\">\n      <span class=\"badge-icon\">\n        <svg width=\"8\" height=\"8\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"20 6 9 17 4 12\"/></svg>\n      </span>\n      Free Forever\n    </div>\n    <div class=\"badge-animated badge-nosignup\">\n      <span class=\"badge-icon\">\n        <svg width=\"8\" height=\"8\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"20 6 9 17 4 12\"/></svg>\n      </span>\n      No Sign-up\n    </div>\n  </div>\n</nav>
 
 <!-- ── MAIN ── -->
 <main class="max-w-2xl mx-auto px-4 pt-6 pb-20 page-inner">
@@ -646,7 +627,7 @@
 
   <!-- Footer -->
   <p class="text-center text-xs text-gray-400 mt-6">
-    Built by <span class="font-600 text-brand-400">Advay</span> · Free to use, no sign-up required · <a href="/media" class="text-brand-500 hover:underline font-500">Media Kit</a>
+    Built by <span class="font-600 text-brand-400">Advay</span> · Free to use, no sign-up required
   </p>
 </main>
 
@@ -876,12 +857,13 @@
   var installAccept  = document.getElementById('installAccept');
   var installDismiss = document.getElementById('installDismiss');
 
+  function showBanner()  { if (installBanner) installBanner.style.display = 'block'; }
+  function hideBanner()  { if (installBanner) installBanner.style.display = 'none'; }
+
   window.addEventListener('beforeinstallprompt', function(e) {
     e.preventDefault();
     deferredPrompt = e;
-    if (installBanner && !localStorage.getItem('advaypass-install-dismissed')) {
-      installBanner.classList.remove('hidden');
-    }
+    if (!localStorage.getItem('advaypass-install-dismissed')) showBanner();
   });
 
   async function triggerInstall() {
@@ -889,16 +871,16 @@
     deferredPrompt.prompt();
     await deferredPrompt.userChoice;
     deferredPrompt = null;
-    if (installBanner) installBanner.classList.add('hidden');
+    hideBanner();
   }
   if (installAccept)  installAccept.addEventListener('click', triggerInstall);
   if (installDismiss) installDismiss.addEventListener('click', function() {
-    installBanner.classList.add('hidden');
+    hideBanner();
     localStorage.setItem('advaypass-install-dismissed', '1');
   });
 
   window.addEventListener('appinstalled', function() {
-    if (installBanner) installBanner.classList.add('hidden');
+    hideBanner();
     deferredPrompt = null;
   });
 
@@ -906,8 +888,8 @@
 
 <!-- ── PWA Install Banner ── -->
 <!-- ── PWA Install Popup Card ── -->
-<div id="installBanner" class="hidden fixed bottom-5 left-4 right-4 z-50 mx-auto"
-  style="max-width:400px;left:50%;transform:translateX(-50%);bottom:20px;
+<div id="installBanner" style="display:none;position:fixed;bottom:20px;left:50%;
+  transform:translateX(-50%);z-index:50;width:calc(100% - 32px);max-width:400px;
   background:rgba(255,255,255,0.97);backdrop-filter:blur(20px);
   border:1px solid #bfdbfe;border-radius:20px;padding:18px 20px;
   box-shadow:0 16px 48px rgba(37,99,235,0.18);">
