@@ -1,12 +1,14 @@
 'use strict';
 require('dotenv').config();
 
-const express  = require('express');
-const { nanoid } = require('nanoid');
-const path     = require('path');
-const fs       = require('fs').promises;
-const crypto   = require('crypto');
-const QRCode   = require('qrcode');
+const express      = require('express');
+const cors         = require('cors');
+const rateLimit    = require('express-rate-limit');
+const { nanoid }   = require('nanoid');
+const path         = require('path');
+const fs           = require('fs').promises;
+const crypto       = require('crypto');
+const QRCode       = require('qrcode');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -15,7 +17,23 @@ const SMARTLINK_URL = process.env.SMARTLINK_URL
   || 'https://millionairelucidlytransmitted.com/qfbmxh4gax?key=bc08f1d488a15a751b9aec38cdf96e49';
 const SITE_URL = (process.env.SITE_URL || `http://localhost:${PORT}`).replace(/\/$/, '');
 
+// ════════════════════════════════════════════════════════
+//  MIDDLEWARE
+// ════════════════════════════════════════════════════════
+
+app.use(cors());
 app.use(express.json());
+app.set('trust proxy', 1); // Required for rate limiter behind Render's proxy
+
+// Rate limiter — 10 shorten requests per IP per minute
+const shortenLimiter = rateLimit({
+  windowMs : 60 * 1000,
+  max      : 10,
+  standardHeaders: true,
+  legacyHeaders  : false,
+  message  : { error: 'Too many requests. You can shorten up to 10 links per minute. Please wait and try again.' }
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ════════════════════════════════════════════════════════
@@ -179,11 +197,11 @@ function parseUA(ua = '') {
   const device  = /mobile|android|iphone|ipad|tablet/i.test(ua) ? 'Mobile' : 'Desktop';
   const u       = ua.toLowerCase();
   let browser   = 'Other';
-  if      (u.includes('edg'))    browser = 'Edge';
+  if      (u.includes('edg'))                      browser = 'Edge';
   else if (u.includes('opr') || u.includes('opera')) browser = 'Opera';
-  else if (u.includes('chrome')) browser = 'Chrome';
-  else if (u.includes('firefox'))browser = 'Firefox';
-  else if (u.includes('safari')) browser = 'Safari';
+  else if (u.includes('chrome'))                   browser = 'Chrome';
+  else if (u.includes('firefox'))                  browser = 'Firefox';
+  else if (u.includes('safari'))                   browser = 'Safari';
   return { device, browser };
 }
 
@@ -203,38 +221,140 @@ const clientIP = req =>
   || req.socket?.remoteAddress
   || '0.0.0.0';
 
+// ── URL Blacklist / SSRF protection ──────────────────────────────────────────
+function isBlockedURL(rawUrl) {
+  try {
+    const u = new URL(rawUrl);
+    // Only allow http and https
+    if (!['http:', 'https:'].includes(u.protocol)) return true;
+    const host = u.hostname.toLowerCase().replace(/\[|\]/g, '');
+    // Loopback & localhost
+    if (host === 'localhost' || host === '::1' || host === '0.0.0.0') return true;
+    if (/^127\./.test(host)) return true;
+    // Private ranges
+    if (/^10\./.test(host)) return true;
+    if (/^192\.168\./.test(host)) return true;
+    if (/^172\.(1[6-9]|2\d|3[01])\./.test(host)) return true;
+    // Link-local & cloud metadata
+    if (/^169\.254\./.test(host)) return true;
+    // mDNS / .local
+    if (host.endsWith('.local')) return true;
+    // IPv6 private
+    if (/^(fc|fd)/i.test(host)) return true;
+    return false;
+  } catch { return true; }
+}
+
+// ── Custom alias validation ───────────────────────────────────────────────────
+const RESERVED_CODES = new Set([
+  'api', 'analytics', 'health', 'wait', 'expired', 'index',
+  'manifest', 'sw', 'favicon', 'robots', 'sitemap', 'admin',
+  'dashboard', 'login', 'register', 'static', 'public', 'assets',
+  'img', 'images', 'css', 'js', 'fonts', 'icons'
+]);
+
+function validateAlias(alias) {
+  if (!alias || alias.trim() === '') return null; // empty = auto-generate, not an error
+  const a = alias.trim().toLowerCase();
+  if (a.length < 3)  return 'Alias must be at least 3 characters.';
+  if (a.length > 30) return 'Alias must be 30 characters or less.';
+  if (!/^[a-z0-9][a-z0-9-]*[a-z0-9]$/.test(a) && !/^[a-z0-9]{1,2}$/.test(a))
+    return 'Alias can only contain lowercase letters, numbers, and hyphens (no leading/trailing hyphens).';
+  if (RESERVED_CODES.has(a)) return 'That alias is reserved. Please choose a different one.';
+  return null; // valid
+}
+
+// ════════════════════════════════════════════════════════
+//  SEO ROUTES (dynamic, need SITE_URL)
+// ════════════════════════════════════════════════════════
+
+app.get('/robots.txt', (_req, res) => {
+  res.type('text/plain');
+  res.send(
+`User-agent: *
+Allow: /$
+Disallow: /api/
+Disallow: /analytics/
+Disallow: /wait.html
+Disallow: /expired.html
+
+Sitemap: ${SITE_URL}/sitemap.xml`
+  );
+});
+
+app.get('/sitemap.xml', (_req, res) => {
+  const now = new Date().toISOString().slice(0, 10);
+  res.type('application/xml');
+  res.send(
+`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>${SITE_URL}/</loc>
+    <lastmod>${now}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>`
+  );
+});
+
 // ════════════════════════════════════════════════════════
 //  ROUTES
 // ════════════════════════════════════════════════════════
 
 // --- Health check ---
 app.get('/health', (_req, res) => res.json({
-  status: 'ok',
-  uptime: Math.floor(process.uptime()),
-  storage: useDB ? 'supabase' : 'json',
+  status   : 'ok',
+  uptime   : Math.floor(process.uptime()),
+  storage  : useDB ? 'supabase' : 'json',
   timestamp: new Date().toISOString()
 }));
 
-// --- Client config (exposes smartlink safely) ---
+// --- Client config ---
 app.get('/api/config', (_req, res) => res.json({ smartlink: SMARTLINK_URL }));
 
-// --- Shorten ---
-app.post('/api/shorten', async (req, res) => {
-  try {
-    const { url, expiry_days, analytics_password } = req.body;
+// --- Check alias availability ---
+app.get('/api/check-alias/:alias', async (req, res) => {
+  const alias = req.params.alias.toLowerCase();
+  const validationError = validateAlias(alias);
+  if (validationError) return res.json({ available: false, reason: validationError });
+  const existing = await storage.getLink(alias).catch(() => null);
+  if (existing) return res.json({ available: false, reason: 'This alias is already taken.' });
+  res.json({ available: true });
+});
 
+// --- Shorten ---
+app.post('/api/shorten', shortenLimiter, async (req, res) => {
+  try {
+    const { url, expiry_days, analytics_password, custom_alias } = req.body;
+
+    // URL validation
     if (!url || !/^https?:\/\/.+/.test(url.trim()))
       return res.status(400).json({ error: 'Please enter a valid URL starting with http:// or https://' });
 
-    const days      = Math.max(1, Math.min(365, parseInt(expiry_days) || 7));
+    // SSRF / private IP block
+    if (isBlockedURL(url.trim()))
+      return res.status(400).json({ error: 'This URL is not allowed.' });
+
+    // Alias validation
+    const aliasInput = (custom_alias || '').trim().toLowerCase();
+    if (aliasInput) {
+      const aliasError = validateAlias(aliasInput);
+      if (aliasError) return res.status(400).json({ error: aliasError });
+      // Check if alias is taken
+      const existing = await storage.getLink(aliasInput).catch(() => null);
+      if (existing) return res.status(409).json({ error: 'This alias is already taken. Please choose a different one.', aliasTaken: true });
+    }
+
+    const days       = Math.max(1, Math.min(365, parseInt(expiry_days) || 7));
     const expires_at = new Date(Date.now() + days * 86_400_000).toISOString();
-    const ap        = (analytics_password || '').trim().slice(0, 8) || null;
-    const code      = nanoid(8);
+    const ap         = (analytics_password || '').trim().slice(0, 8) || null;
+    const code       = aliasInput || nanoid(8);
 
     await storage.saveLink(code, { url: url.trim(), expires_at, analytics_password: ap });
 
     const shortUrl = `${SITE_URL}/${code}`;
-    const qrSvg   = await QRCode.toString(shortUrl, {
+    const qrSvg    = await QRCode.toString(shortUrl, {
       type: 'svg',
       errorCorrectionLevel: 'H',
       color: { dark: '#1e40af', light: '#ffffff' },
@@ -242,7 +362,16 @@ app.post('/api/shorten', async (req, res) => {
       width: 300
     });
 
-    res.json({ shortUrl, code, expires_at, days, qrSvg, analyticsUrl: `${SITE_URL}/analytics/${code}`, hasPassword: !!ap });
+    res.json({
+      shortUrl,
+      code,
+      expires_at,
+      days,
+      qrSvg,
+      analyticsUrl: `${SITE_URL}/analytics/${code}`,
+      hasPassword : !!ap,
+      isCustomAlias: !!aliasInput
+    });
   } catch (err) {
     console.error('Shorten error:', err);
     res.status(500).json({ error: 'Server error. Please try again.' });
@@ -252,15 +381,15 @@ app.post('/api/shorten', async (req, res) => {
 // --- Analytics password check ---
 app.post('/api/analytics/:code/auth', async (req, res) => {
   const link = await storage.getLink(req.params.code);
-  if (!link)                                        return res.status(404).json({ error: 'Link not found' });
-  if (!link.analytics_password)                     return res.json({ access: true });
+  if (!link)                                         return res.status(404).json({ error: 'Link not found' });
+  if (!link.analytics_password)                      return res.json({ access: true });
   if (link.analytics_password === req.body.password) return res.json({ access: true });
   return res.status(401).json({ error: 'Incorrect password' });
 });
 
 // --- Analytics data ---
 app.get('/api/analytics/:code', async (req, res) => {
-  const { code } = req.params;
+  const { code }     = req.params;
   const { password } = req.query;
 
   const link = await storage.getLink(code);
@@ -268,8 +397,8 @@ app.get('/api/analytics/:code', async (req, res) => {
   if (link.analytics_password && link.analytics_password !== password)
     return res.status(401).json({ needsPassword: true });
 
-  const clicks      = await storage.getClicks(code);
-  const totalClicks = clicks.length;
+  const clicks       = await storage.getClicks(code);
+  const totalClicks  = clicks.length;
   const uniqueClicks = new Set(clicks.map(c => c.ip_hash)).size;
 
   const byCountry = {}, byDevice = {}, byBrowser = {}, byDay = {};
@@ -282,8 +411,8 @@ app.get('/api/analytics/:code', async (req, res) => {
   });
 
   res.json({
-    link: { code, url: link.url, created_at: link.created_at, expires_at: link.expires_at },
-    stats: { totalClicks, uniqueClicks, byCountry, byDevice, byBrowser, byDay, recentClicks: clicks.slice(0, 10) }
+    link  : { code, url: link.url, created_at: link.created_at, expires_at: link.expires_at },
+    stats : { totalClicks, uniqueClicks, byCountry, byDevice, byBrowser, byDay, recentClicks: clicks.slice(0, 10) }
   });
 });
 
@@ -295,7 +424,7 @@ app.get('/analytics/:code', (_req, res) =>
 // --- Short code redirect (must come last) ---
 app.get('/:code', async (req, res) => {
   const { code } = req.params;
-  if (/^(api|analytics|favicon\.ico|robots\.txt|sitemap\.xml)/.test(code))
+  if (/^(api|analytics|health|favicon\.ico|favicon\.svg|robots\.txt|sitemap\.xml|manifest\.json|sw\.js)/.test(code))
     return res.status(404).send('Not found');
 
   let link;
@@ -309,11 +438,10 @@ app.get('/:code', async (req, res) => {
     return res.redirect('/expired.html?reason=expired');
   }
 
-  // Record click asynchronously — never block the redirect
-  const ip      = clientIP(req);
+  const ip               = clientIP(req);
   const { device, browser } = parseUA(req.headers['user-agent']);
-  const referrer = req.headers['referer'] || '';
-  const ip_hash  = hashIP(ip);
+  const referrer         = req.headers['referer'] || '';
+  const ip_hash          = hashIP(ip);
 
   geoIP(ip).then(country =>
     storage.saveClick(code, { ip_hash, country, device, browser, referrer })
@@ -337,10 +465,12 @@ setInterval(() => storage.deleteExpired().catch(console.error), 60 * 60 * 1000);
 async function start() {
   if (!useDB) await ensureDataDir();
   await initDB();
+  // Run cleanup immediately on boot (not just on the hourly interval)
+  await storage.deleteExpired().catch(console.error);
   app.listen(PORT, () => {
     const mode = useDB ? 'PostgreSQL (Supabase)' : 'JSON file';
     console.log(`\n🚀 AdvayPass is live → http://localhost:${PORT}`);
-    console.log(`💾 Storage: ${mode}`);
+    console.log(`💾 Storage : ${mode}`);
     console.log(`🔗 Smartlink: ${SMARTLINK_URL.slice(0, 60)}...\n`);
   });
 }
