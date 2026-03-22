@@ -348,10 +348,6 @@
 
   <!-- ── ANIMATED BADGES ── -->
   <div class="flex items-center gap-2">
-    <button id="installBtn" aria-label="Install AdvayPass app"
-      class="hidden w-9 h-9 rounded-full items-center justify-center text-brand-600 hover:bg-brand-100 transition-colors border border-brand-200">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v13"/><polyline points="8 11 12 15 16 11"/><rect x="2" y="17" width="20" height="4" rx="1"/></svg>
-    </button>
     <div class="badge-animated badge-free">
       <span class="badge-icon">
         <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
@@ -618,22 +614,22 @@
   </div>
 
   <!-- FEATURES -->
-  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-    <div class="glass-card rounded-2xl p-5">
+  <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+    <div class="glass-card rounded-2xl p-5 flex flex-col items-center text-center">
       <div class="w-9 h-9 bg-brand-100 rounded-xl flex items-center justify-center mb-3">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
       </div>
       <h3 class="font-700 text-gray-800 text-sm mb-1">Click Analytics</h3>
       <p class="text-xs text-gray-500">Clicks, countries, devices, browsers — all tracked per link.</p>
     </div>
-    <div class="glass-card rounded-2xl p-5">
+    <div class="glass-card rounded-2xl p-5 flex flex-col items-center text-center">
       <div class="w-9 h-9 bg-brand-100 rounded-xl flex items-center justify-center mb-3">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
       </div>
       <h3 class="font-700 text-gray-800 text-sm mb-1">QR Code</h3>
       <p class="text-xs text-gray-500">Auto-generated QR for every link. Download as PNG instantly.</p>
     </div>
-    <div class="glass-card rounded-2xl p-5">
+    <div class="glass-card rounded-2xl p-5 flex flex-col items-center text-center col-span-2 sm:col-span-1">
       <div class="w-9 h-9 bg-brand-100 rounded-xl flex items-center justify-center mb-3">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
       </div>
@@ -876,7 +872,6 @@
 
   // ── PWA install prompt ───────────────────────────────────────────────────────
   var deferredPrompt = null;
-  var installBtn     = document.getElementById('installBtn');
   var installBanner  = document.getElementById('installBanner');
   var installAccept  = document.getElementById('installAccept');
   var installDismiss = document.getElementById('installDismiss');
@@ -884,7 +879,6 @@
   window.addEventListener('beforeinstallprompt', function(e) {
     e.preventDefault();
     deferredPrompt = e;
-    if (installBtn) { installBtn.classList.remove('hidden'); installBtn.classList.add('flex'); }
     if (installBanner && !localStorage.getItem('advaypass-install-dismissed')) {
       installBanner.classList.remove('hidden');
     }
@@ -895,10 +889,8 @@
     deferredPrompt.prompt();
     await deferredPrompt.userChoice;
     deferredPrompt = null;
-    if (installBtn)    { installBtn.classList.add('hidden'); installBtn.classList.remove('flex'); }
     if (installBanner) installBanner.classList.add('hidden');
   }
-  if (installBtn)     installBtn.addEventListener('click', triggerInstall);
   if (installAccept)  installAccept.addEventListener('click', triggerInstall);
   if (installDismiss) installDismiss.addEventListener('click', function() {
     installBanner.classList.add('hidden');
@@ -906,7 +898,6 @@
   });
 
   window.addEventListener('appinstalled', function() {
-    if (installBtn)    { installBtn.classList.add('hidden'); installBtn.classList.remove('flex'); }
     if (installBanner) installBanner.classList.add('hidden');
     deferredPrompt = null;
   });
@@ -914,15 +905,36 @@
 </script>
 
 <!-- ── PWA Install Banner ── -->
-<!-- ── PWA Install Banner ── -->
-<div id="installBanner" class="hidden fixed bottom-0 left-0 right-0 z-50 bg-brand-600 text-white px-4 py-3 flex items-center justify-between shadow-xl">
-  <div class="flex items-center gap-2">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v13"/><polyline points="8 11 12 15 16 11"/><rect x="2" y="17" width="20" height="4" rx="1"/></svg>
-    <span class="text-sm font-700">Install AdvayPass — works offline too!</span>
-  </div>
-  <div class="flex items-center gap-2">
-    <button id="installAccept" class="bg-white text-brand-600 text-xs font-800 px-3 py-1.5 rounded-lg">Install</button>
-    <button id="installDismiss" class="text-white/70 text-xs font-600 px-2">✕</button>
+<!-- ── PWA Install Popup Card ── -->
+<div id="installBanner" class="hidden fixed bottom-5 left-4 right-4 z-50 mx-auto"
+  style="max-width:400px;left:50%;transform:translateX(-50%);bottom:20px;
+  background:rgba(255,255,255,0.97);backdrop-filter:blur(20px);
+  border:1px solid #bfdbfe;border-radius:20px;padding:18px 20px;
+  box-shadow:0 16px 48px rgba(37,99,235,0.18);">
+  <div style="display:flex;align-items:flex-start;gap:14px;">
+    <div style="width:44px;height:44px;background:linear-gradient(135deg,#2563eb,#1d4ed8);
+      border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v13"/><polyline points="8 11 12 15 16 11"/><rect x="2" y="17" width="20" height="4" rx="1"/></svg>
+    </div>
+    <div style="flex:1;min-width:0;">
+      <p style="font-family:'Sora',sans-serif;font-size:.88rem;font-weight:700;color:#1e293b;margin-bottom:3px;">Install AdvayPass</p>
+      <p style="font-family:'Sora',sans-serif;font-size:.76rem;color:#64748b;line-height:1.5;margin-bottom:12px;">Add to your home screen for quick access. Works offline too!</p>
+      <div style="display:flex;gap:8px;">
+        <button id="installAccept"
+          style="flex:1;padding:9px;background:linear-gradient(135deg,#2563eb,#1d4ed8);
+          border:none;border-radius:10px;color:white;font-family:'Sora',sans-serif;
+          font-size:.8rem;font-weight:700;cursor:pointer;
+          box-shadow:0 4px 12px rgba(37,99,235,0.35);">
+          Install App
+        </button>
+        <button id="installDismiss"
+          style="padding:9px 14px;background:none;border:1px solid #e0e8ff;
+          border-radius:10px;color:#64748b;font-family:'Sora',sans-serif;
+          font-size:.8rem;font-weight:600;cursor:pointer;">
+          Not now
+        </button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -982,7 +994,7 @@
     };
   }
 
-  // ── Hide install banner if already running as installed PWA/TWA ──────────────
+  // ── Hide install popup if already running as installed PWA/TWA ──────────────
   (function() {
     var isPWA = window.matchMedia('(display-mode: standalone)').matches
              || window.navigator.standalone === true
