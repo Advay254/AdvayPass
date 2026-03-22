@@ -298,6 +298,11 @@ app.get('/sitemap.xml', (_req, res) => {
   );
 });
 
+// --- Media / press kit page ---
+app.get('/media', (_req, res) =>
+  res.sendFile(path.join(__dirname, 'public', 'media.html'))
+);
+
 // ════════════════════════════════════════════════════════
 //  ROUTES
 // ════════════════════════════════════════════════════════
@@ -424,7 +429,7 @@ app.get('/analytics/:code', (_req, res) =>
 // --- Short code redirect (must come last) ---
 app.get('/:code', async (req, res) => {
   const { code } = req.params;
-  if (/^(api|analytics|health|favicon\.ico|favicon\.svg|robots\.txt|sitemap\.xml|manifest\.json|sw\.js)/.test(code))
+  if (/^(api|analytics|health|media|icons|favicon\.ico|favicon\.svg|robots\.txt|sitemap\.xml|manifest\.json|sw\.js)/.test(code))
     return res.status(404).send('Not found');
 
   let link;
