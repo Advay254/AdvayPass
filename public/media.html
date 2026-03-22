@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AdvayPass — Media Kit</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" type="image/png" href="/icons/icon-192.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#2563eb" />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sora: ['Sora','sans-serif'], mono: ['JetBrains Mono','monospace'] },
+          colors: { brand: { 50:'#eff6ff',100:'#dbeafe',200:'#bfdbfe',300:'#93c5fd',400:'#60a5fa',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8',800:'#1e40af',900:'#1e3a8a' } }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { font-family: 'Sora', sans-serif; }
+    body { background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 60%, #e0f2fe 100%); min-height: 100vh; }
+    .glass { background: rgba(255,255,255,0.85); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.9); box-shadow: 0 8px 40px rgba(37,99,235,0.07); }
+    .logo-mark { background: linear-gradient(135deg,#2563eb,#1d4ed8); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .btn-dl { background: linear-gradient(135deg,#2563eb,#1d4ed8); box-shadow: 0 4px 16px rgba(37,99,235,0.3); transition: all 0.2s; }
+    .btn-dl:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(37,99,235,0.4); }
+    .asset-card { transition: transform 0.2s, box-shadow 0.2s; }
+    .asset-card:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(37,99,235,0.12); }
+    .section-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #94a3b8; margin-bottom: 12px; }
+    .canva-badge { background: #7c3aed; color: white; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.05em; }
+    /* Icon preview grid */
+    .icon-preview { image-rendering: pixelated; border-radius: 12px; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="px-6 py-5 flex items-center justify-between max-w-5xl mx-auto">
+  <a href="/" class="flex items-center gap-2 no-underline">
+    <div class="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center shadow-sm">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+    </div>
+    <span class="font-bold text-lg text-gray-800">Advay<span class="logo-mark">Pass</span></span>
+  </a>
+  <span class="text-xs font-700 text-brand-600 bg-brand-50 border border-brand-200 px-3 py-1.5 rounded-full">Media Kit</span>
+</nav>
+
+<main class="max-w-5xl mx-auto px-4 pb-20">
+
+  <div class="mb-10">
+    <h1 class="text-3xl font-800 text-gray-900 mb-2">Media & Marketing Kit</h1>
+    <p class="text-gray-500 text-sm max-w-xl">All assets for promoting AdvayPass — icons, screenshots, promo graphics. Everything in one place.</p>
+  </div>
+
+  <!-- ── BRAND COLORS ── -->
+  <div class="glass rounded-2xl p-6 mb-6">
+    <p class="section-label">Brand Colors</p>
+    <div class="flex flex-wrap gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl shadow-sm" style="background:#2563eb"></div>
+        <div>
+          <p class="text-xs font-700 text-gray-700">Primary Blue</p>
+          <p class="text-xs font-mono text-gray-400">#2563eb</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl shadow-sm" style="background:#1d4ed8"></div>
+        <div>
+          <p class="text-xs font-700 text-gray-700">Dark Blue</p>
+          <p class="text-xs font-mono text-gray-400">#1d4ed8</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl shadow-sm border border-gray-100" style="background:#eff6ff"></div>
+        <div>
+          <p class="text-xs font-700 text-gray-700">Light Blue</p>
+          <p class="text-xs font-mono text-gray-400">#eff6ff</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl shadow-sm" style="background:#1e40af"></div>
+        <div>
+          <p class="text-xs font-700 text-gray-700">Navy</p>
+          <p class="text-xs font-mono text-gray-400">#1e40af</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl shadow-sm" style="background:#0f172a"></div>
+        <div>
+          <p class="text-xs font-700 text-gray-700">Dark BG</p>
+          <p class="text-xs font-mono text-gray-400">#0f172a</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── APP ICONS ── -->
+  <div class="glass rounded-2xl p-6 mb-6">
+    <p class="section-label">App Icons — All Sizes</p>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-5">
+      <div class="asset-card glass rounded-xl p-4 text-center">
+        <img src="/icons/icon-512.png" alt="512" class="icon-preview w-16 h-16 mx-auto mb-2" />
+        <p class="text-xs font-700 text-gray-700">512 × 512</p>
+        <p class="text-xs text-gray-400 mb-3">PWA / Play Store</p>
+        <a href="/icons/icon-512.png" download class="btn-dl text-white text-xs font-600 px-3 py-1.5 rounded-lg inline-block">↓ PNG</a>
+      </div>
+      <div class="asset-card glass rounded-xl p-4 text-center">
+        <img src="/icons/maskable-512.png" alt="maskable" class="icon-preview w-16 h-16 mx-auto mb-2" />
+        <p class="text-xs font-700 text-gray-700">512 × 512</p>
+        <p class="text-xs text-gray-400 mb-3">Maskable (Android)</p>
+        <a href="/icons/maskable-512.png" download class="btn-dl text-white text-xs font-600 px-3 py-1.5 rounded-lg inline-block">↓ PNG</a>
+      </div>
+      <div class="asset-card glass rounded-xl p-4 text-center">
+        <img src="/icons/icon-192.png" alt="192" class="icon-preview w-16 h-16 mx-auto mb-2" />
+        <p class="text-xs font-700 text-gray-700">192 × 192</p>
+        <p class="text-xs text-gray-400 mb-3">PWA Required</p>
+        <a href="/icons/icon-192.png" download class="btn-dl text-white text-xs font-600 px-3 py-1.5 rounded-lg inline-block">↓ PNG</a>
+      </div>
+      <div class="asset-card glass rounded-xl p-4 text-center">
+        <img src="/icons/icon-144.png" alt="144" class="icon-preview w-16 h-16 mx-auto mb-2" />
+        <p class="text-xs font-700 text-gray-700">144 × 144</p>
+        <p class="text-xs text-gray-400 mb-3">Android / Chrome</p>
+        <a href="/icons/icon-144.png" download class="btn-dl text-white text-xs font-600 px-3 py-1.5 rounded-lg inline-block">↓ PNG</a>
+      </div>
+    </div>
+
+    <!-- All sizes compact list -->
+    <div class="bg-gray-50 rounded-xl p-4">
+      <p class="text-xs font-700 text-gray-500 mb-3">All available sizes</p>
+      <div class="flex flex-wrap gap-2">
+        <% for (const s of [72,96,128,144,152,192,384,512]) { %>
+        <a id="icon-dl-<%= s %>" href="/icons/icon-<%= s %>.png" download
+          class="text-xs font-600 text-brand-600 border border-brand-200 bg-brand-50 hover:bg-brand-100 px-3 py-1.5 rounded-lg transition-colors">
+          <%= s %>px
+        </a>
+        <% } %>
+      </div>
+      <!-- Rendered by JS below since no templating -->
+      <div id="iconLinks" class="flex flex-wrap gap-2"></div>
+    </div>
+
+    <div class="mt-3">
+      <a href="/favicon.svg" download class="text-xs font-600 text-brand-600 hover:underline">↓ favicon.svg (vector, any size)</a>
+    </div>
+  </div>
+
+  <!-- ── SCREENSHOTS ── -->
+  <div class="glass rounded-2xl p-6 mb-6">
+    <p class="section-label">Store Screenshots</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div class="asset-card glass rounded-xl overflow-hidden">
+        <img src="/icons/screenshot-mobile.png" alt="Mobile screenshot" class="w-full object-cover" style="max-height:200px;object-position:top" />
+        <div class="p-4 flex items-center justify-between">
+          <div>
+            <p class="text-xs font-700 text-gray-700">Mobile Screenshot</p>
+            <p class="text-xs text-gray-400">390 × 844 · Play Store</p>
+          </div>
+          <a href="/icons/screenshot-mobile.png" download class="btn-dl text-white text-xs font-600 px-3 py-1.5 rounded-lg">↓ PNG</a>
+        </div>
+      </div>
+      <div class="asset-card glass rounded-xl overflow-hidden">
+        <img src="/icons/screenshot-wide.png" alt="Wide screenshot" class="w-full object-cover" style="max-height:200px;object-position:top" />
+        <div class="p-4 flex items-center justify-between">
+          <div>
+            <p class="text-xs font-700 text-gray-700">Wide Screenshot</p>
+            <p class="text-xs text-gray-400">1280 × 720 · Feature Graphic</p>
+          </div>
+          <a href="/icons/screenshot-wide.png" download class="btn-dl text-white text-xs font-600 px-3 py-1.5 rounded-lg">↓ PNG</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CANVA PROMO GRAPHICS ── -->
+  <div class="glass rounded-2xl p-6 mb-6">
+    <div class="flex items-center gap-3 mb-4">
+      <p class="section-label mb-0">Promo Graphics</p>
+      <span class="canva-badge">Canva</span>
+    </div>
+    <p class="text-xs text-gray-400 mb-5">Click any card to open in Canva and edit/download. You can update the domain name and colours before downloading.</p>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="promoGrid">
+
+      <!-- Instagram Post -->
+      <div class="asset-card glass rounded-xl overflow-hidden">
+        <div class="bg-brand-600 aspect-square flex items-center justify-center relative overflow-hidden" style="max-height:220px">
+          <div class="text-center text-white px-6">
+            <div class="text-4xl font-800 mb-2">AP</div>
+            <div class="text-sm font-600 opacity-80">Instagram Post</div>
+            <div class="text-xs opacity-50 mt-1">1080 × 1080</div>
+          </div>
+          <div class="absolute inset-0 bg-gradient-to-br from-blue-600 to-blue-900 opacity-90"></div>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div class="text-center text-white px-6">
+              <div class="text-5xl font-800 mb-2" style="font-family:sans-serif">AP</div>
+              <div class="text-base font-700">AdvayPass</div>
+              <div class="text-xs opacity-70 mt-1">Shorten. Track. Share.</div>
+            </div>
+          </div>
+        </div>
+        <div class="p-4">
+          <p class="text-xs font-700 text-gray-700 mb-1">Instagram Launch Post</p>
+          <p class="text-xs text-gray-400 mb-3">4 variations generated. Pick your favourite and customise.</p>
+          <div class="flex flex-wrap gap-2">
+            <a href="https://www.canva.com/d/UCyrkfEqyGEP-Id" target="_blank" rel="noopener" class="btn-dl text-white text-xs font-600 px-3 py-1.5 rounded-lg inline-block">Open v1 →</a>
+            <a href="https://www.canva.com/d/s8ePxAGPRpy0DzP" target="_blank" rel="noopener" class="text-xs font-600 text-brand-600 border border-brand-200 px-3 py-1.5 rounded-lg inline-block hover:bg-brand-50">v2</a>
+            <a href="https://www.canva.com/d/DZ0NWYH0cbEvXcP" target="_blank" rel="noopener" class="text-xs font-600 text-brand-600 border border-brand-200 px-3 py-1.5 rounded-lg inline-block hover:bg-brand-50">v3</a>
+            <a href="https://www.canva.com/d/I0VPMqh3Vif2VqS" target="_blank" rel="noopener" class="text-xs font-600 text-brand-600 border border-brand-200 px-3 py-1.5 rounded-lg inline-block hover:bg-brand-50">v4</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Twitter / X Post -->
+      <div class="asset-card glass rounded-xl overflow-hidden">
+        <div class="aspect-video flex items-center justify-center relative overflow-hidden" style="max-height:220px; background: linear-gradient(135deg, #0f172a, #1e3a8a)">
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div class="text-center text-white px-6">
+              <div class="text-3xl font-800 mb-1" style="font-family:sans-serif">AdvayPass</div>
+              <div class="text-xs opacity-60">Your links, supercharged.</div>
+              <div class="text-xs opacity-40 mt-1">Twitter / X Post · 1200×675</div>
+            </div>
+          </div>
+        </div>
+        <div class="p-4">
+          <p class="text-xs font-700 text-gray-700 mb-1">Twitter / X Announcement</p>
+          <p class="text-xs text-gray-400 mb-3">4 variations generated. Pick your favourite and customise.</p>
+          <div class="flex flex-wrap gap-2">
+            <a href="https://www.canva.com/d/O2Vb9MnVxuVWArk" target="_blank" rel="noopener" class="btn-dl text-white text-xs font-600 px-3 py-1.5 rounded-lg inline-block">Open v1 →</a>
+            <a href="https://www.canva.com/d/iAZ0MOf1Xd0CClM" target="_blank" rel="noopener" class="text-xs font-600 text-brand-600 border border-brand-200 px-3 py-1.5 rounded-lg inline-block hover:bg-brand-50">v2</a>
+            <a href="https://www.canva.com/d/HiSeJ5CaXFmdhsh" target="_blank" rel="noopener" class="text-xs font-600 text-brand-600 border border-brand-200 px-3 py-1.5 rounded-lg inline-block hover:bg-brand-50">v3</a>
+            <a href="https://www.canva.com/d/DOpQAuL1z7sZMHG" target="_blank" rel="noopener" class="text-xs font-600 text-brand-600 border border-brand-200 px-3 py-1.5 rounded-lg inline-block hover:bg-brand-50">v4</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── COPY & PASTE SOCIAL CAPTIONS ── -->
+  <div class="glass rounded-2xl p-6 mb-6">
+    <p class="section-label">Ready-to-Post Captions</p>
+    <div class="space-y-4">
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="black"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.26 5.632zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          <span class="text-xs font-700 text-gray-700">X / Twitter</span>
+        </div>
+        <div class="bg-gray-50 rounded-xl p-4 text-xs text-gray-600 leading-relaxed border border-gray-100" id="captionX">
+          🔗 Introducing AdvayPass — a free URL shortener that actually gives you data.<br/><br/>
+          ✅ Click analytics (country, device, browser)<br/>
+          ✅ Custom aliases<br/>
+          ✅ Auto-generating QR codes<br/>
+          ✅ Link expiry (1 day → 1 year)<br/>
+          ✅ Zero sign-up<br/><br/>
+          Try it free 👇<br/>
+          [YOUR DOMAIN HERE]<br/><br/>
+          #URLShortener #IndieHacker #BuildInPublic #Tools
+        </div>
+        <button onclick="copyCap('captionX',this)" class="mt-2 text-xs font-600 text-brand-600 border border-brand-200 px-3 py-1.5 rounded-lg hover:bg-brand-50 transition-colors">Copy Caption</button>
+      </div>
+
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#1877f2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          <span class="text-xs font-700 text-gray-700">Facebook / WhatsApp</span>
+        </div>
+        <div class="bg-gray-50 rounded-xl p-4 text-xs text-gray-600 leading-relaxed border border-gray-100" id="captionFB">
+          I built a free URL shortener called AdvayPass 🔗<br/><br/>
+          What makes it different? It actually tracks your clicks — you get country breakdowns, device types, browser stats, all per link. Plus you can set a custom alias (like yourdomain.com/promo), auto-expiry, and a QR code is generated automatically for every link.<br/><br/>
+          No account. No credit card. Completely free.<br/><br/>
+          Check it out: [YOUR DOMAIN HERE]
+        </div>
+        <button onclick="copyCap('captionFB',this)" class="mt-2 text-xs font-600 text-brand-600 border border-brand-200 px-3 py-1.5 rounded-lg hover:bg-brand-50 transition-colors">Copy Caption</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── assetlinks.json GUIDE ── -->
+  <div class="glass rounded-2xl p-6 mb-6">
+    <p class="section-label">TWA — assetlinks.json</p>
+    <p class="text-xs text-gray-500 mb-3">After generating your APK on <a href="https://www.pwabuilder.com" target="_blank" class="text-brand-600 hover:underline">PWABuilder</a>, it gives you a <code class="font-mono bg-gray-100 px-1.5 py-0.5 rounded">assetlinks.json</code> file. Replace the placeholder at <code class="font-mono bg-gray-100 px-1.5 py-0.5 rounded">public/.well-known/assetlinks.json</code> in your repo with that file and redeploy. That's it.</p>
+    <div class="bg-gray-900 rounded-xl p-4 text-xs font-mono text-green-400 overflow-x-auto">
+<pre>[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "YOUR_PACKAGE_NAME_HERE",
+    "sha256_cert_fingerprints": ["YOUR_SHA256_HERE"]
+  }
+}]</pre>
+    </div>
+    <p class="text-xs text-gray-400 mt-3">Served automatically at <code class="font-mono bg-gray-100 px-1 rounded">/.well-known/assetlinks.json</code> — no env vars needed.</p>
+  </div>
+
+  <!-- Footer -->
+  <p class="text-center text-xs text-gray-400 mt-8">
+    <a href="/" class="text-brand-500 font-600 hover:underline">← Back to AdvayPass</a>
+  </p>
+
+</main>
+
+<script>
+  // Render icon download links
+  const wrap = document.getElementById('iconLinks');
+  [72,96,128,144,152,192,384,512].forEach(s => {
+    const a = document.createElement('a');
+    a.href = `/icons/icon-${s}.png`;
+    a.download = `icon-${s}.png`;
+    a.textContent = `${s}px`;
+    a.className = 'text-xs font-600 text-brand-600 border border-brand-200 bg-brand-50 hover:bg-brand-100 px-3 py-1.5 rounded-lg transition-colors';
+    wrap.appendChild(a);
+  });
+
+  // Copy caption
+  function copyCap(id, btn) {
+    const el  = document.getElementById(id);
+    const txt = el.innerText;
+    navigator.clipboard.writeText(txt);
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('bg-green-50','text-green-600','border-green-200');
+    setTimeout(() => {
+      btn.textContent = orig;
+      btn.classList.remove('bg-green-50','text-green-600','border-green-200');
+    }, 2000);
+  }
+</script>
+</body>
+</html>

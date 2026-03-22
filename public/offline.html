@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Offline — AdvayPass</title>
+  <meta name="robots" content="noindex" />
+  <link rel="icon" type="image/png" href="/icons/icon-192.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Sora', sans-serif;
+      background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+    }
+    .logo { font-size: 1.4rem; font-weight: 800; color: #1e293b; margin-bottom: 32px; }
+    .logo span { color: #2563eb; }
+    .icon { font-size: 3.5rem; margin-bottom: 20px; }
+    h1 { font-size: 1.6rem; font-weight: 800; color: #1e293b; margin-bottom: 10px; }
+    p { color: #64748b; font-size: 0.9rem; max-width: 320px; margin: 0 auto 28px; line-height: 1.6; }
+    .btn {
+      padding: 12px 32px;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-family: 'Sora', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(37,99,235,0.35);
+      transition: all 0.2s;
+    }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 8px 28px rgba(37,99,235,0.45); }
+  </style>
+</head>
+<body>
+  <div class="logo">Advay<span>Pass</span></div>
+  <div class="icon">📡</div>
+  <h1>You're Offline</h1>
+  <p>AdvayPass needs an internet connection to shorten links and load analytics. Check your connection and try again.</p>
+  <button class="btn" onclick="location.reload()">Try Again</button>
+</body>
+</html>

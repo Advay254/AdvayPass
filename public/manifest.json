@@ -1,27 +1,73 @@
 {
-  "name": "AdvayPass",
+  "name": "AdvayPass — Smart URL Shortener",
   "short_name": "AdvayPass",
-  "description": "Free smart URL shortener with click analytics, QR codes, and auto-expiry. No sign-up required.",
-  "start_url": "/",
+  "id": "com.advay.advaypass",
+  "description": "Free smart URL shortener with click analytics, QR codes, custom aliases and auto-expiry. No sign-up required.",
+  "start_url": "/?source=pwa",
+  "scope": "/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "browser"],
   "background_color": "#eff6ff",
   "theme_color": "#2563eb",
   "orientation": "portrait-primary",
+  "lang": "en-US",
+  "dir": "ltr",
   "categories": ["utilities", "productivity"],
+  "prefer_related_applications": false,
+  "launch_handler": { "client_mode": ["focus-existing", "auto"] },
+  "edge_side_panel": { "preferred_width": 400 },
   "icons": [
+    { "src": "/icons/icon-72.png",           "sizes": "72x72",   "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-96.png",           "sizes": "96x96",   "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-128.png",          "sizes": "128x128", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-144.png",          "sizes": "144x144", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-152.png",          "sizes": "152x152", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-192.png",          "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-384.png",          "sizes": "384x384", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png",          "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "screenshots": [
     {
-      "src": "/favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any"
+      "src": "/screenshots/desktop.png",
+      "sizes": "1280x800",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "AdvayPass desktop — shorten, track and share any link"
     },
     {
-      "src": "/favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "maskable"
+      "src": "/screenshots/mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "AdvayPass mobile — free smart URL shortener"
     }
   ],
-  "screenshots": [],
-  "lang": "en"
+  "shortcuts": [
+    {
+      "name": "Shorten a Link",
+      "short_name": "Shorten",
+      "url": "/?source=shortcut",
+      "description": "Shorten any URL instantly",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    }
+  ],
+  "share_target": {
+    "action": "/?share-target",
+    "method": "GET",
+    "params": { "title": "title", "text": "text", "url": "url" }
+  },
+  "file_handlers": [
+    { "action": "/", "accept": { "text/plain": [".txt"], "text/uri-list": [".uri"] } }
+  ],
+  "protocol_handlers": [
+    { "protocol": "web+advaypass", "url": "/?url=%s" }
+  ],
+  "related_applications": [
+    { "platform": "webapp", "url": "https://advaypass.onrender.com/manifest.json" }
+  ],
+  "scope_extensions": [
+    { "origin": "https://advaypass.onrender.com" }
+  ]
 }
